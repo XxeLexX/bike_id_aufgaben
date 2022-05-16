@@ -1,76 +1,34 @@
 import java.io.*;
-import java.util.ArrayList;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Eine Java-Anwendung,
  * die die CSV Zeilenweise einliest und jeweils den Wert der ersten Spalte (ride_id) in ein neues File schreibt
  */
 public class IDCopy {
-
-    // the IDs from the csv file will be stored here first,
-    // then will be written to the new CSV file
-    private ArrayList<String> allID = new ArrayList<>();
-
-    // read CSV from file path
-    public void myRead(String filePath_read) throws IOException {
-        BufferedReader reader = null;
-        String line = null;
-
-        try{
-            reader = new BufferedReader(new FileReader(filePath_read));
-            while ((line = reader.readLine()) != null){
-                String[] row = line.split(",");
-                allID.add(row[0]);
-            }
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-        finally {
-            reader.close();
-        }
-
-        if (allID == null){
-            System.err.println("Here is none of IDs\n");
-        }
-        //System.out.println("Number of IDs : " +  (allID.size()-1));
-    }
-
-    // write only the IDs to a new file
-    public void myWrite(String filePath_write) throws IOException {
-        BufferedWriter writer = null;
-
-        if (allID == null){
-            System.err.println("No IDs, nothing will be written\n");
-        }
-
-        try{
-            writer = new BufferedWriter(new FileWriter(filePath_write));
-            for (String a : allID){
-                writer.write(a);
-                writer.newLine();
-            }
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-        finally {
-            writer.close();
-        }
-    }
-
-    /**
-     * read and write the IDs from CSV file, and the runtimes will also be calculated
-     */
-    public void run(String filePath_read, String filePath_write) throws IOException {
+    public void run(String filePath_read, String filePath_write) {
         // set a timer to calculate the application's runtime
-        Long startTime = System.currentTimeMillis();
-        Long timer = null;
+        long startTime = System.currentTimeMillis();
+        long timer;
 
-        myRead(filePath_read);
-        myWrite(filePath_write);
+        try (Stream<String> streamTemp = Files.lines(Paths.get(filePath_read))){
+            Writer writer = new FileWriter(filePath_write);
 
-        Long endTime = System.currentTimeMillis();
+            Stream<String> temp = streamTemp.skip(1).map(n->n.substring(0,16));
+            String temp2 = temp.collect(Collectors.joining(",\n"));
+            writer.write("ride_id");
+            writer.write("\n");
+            writer.write(temp2);
+            writer.close();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        long endTime = System.currentTimeMillis();
         timer = endTime - startTime;
         System.out.println("Without Flink, Runtime: " + timer + "ms\n");
     }
