@@ -13,6 +13,6 @@
 >- Number of Parallelism = 3, Runtime: 736ms
 >- Number of Parallelism = 4, Runtime: 708ms
 
-![result](/bike_id_aufgaben/Result/result_update.png)
+![result](Result/result_update.png)
 ---
 ---
