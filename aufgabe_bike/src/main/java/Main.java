@@ -11,7 +11,6 @@ public class Main {
 
         // get ride_id with Flink
         // test number of parallelism 1 to 4
-
         IDCopy_Flink idCopy_flink = new IDCopy_Flink();
         for (int i = 1; i <= 4; i ++){
             String writePath_temp = "/Users/lxx/Desktop/Output/" + "para_" + i + "_id_withFlink.csv";
